@@ -1,0 +1,12 @@
+Logs/*
+Logs/*
+WorldBackup/*
+Codigo/*.log
+.DS_Store
+*.vbw
+*.csi
+*.OBJ
+bkNpcs.dat
+*.exe
+*.rar
+*.zip
