@@ -12,3 +12,4 @@ bkNpcs.dat
 *.rar
 *.zip
 *.map
+!/**/.gitkeep
