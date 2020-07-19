@@ -12,4 +12,5 @@ bkNpcs.dat
 *.rar
 *.zip
 *.map
+Server.ini
 !/**/.gitkeep
