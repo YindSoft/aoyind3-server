@@ -190,14 +190,23 @@ On Error GoTo errhandler
     End If ' Userindex > 0
    
     If MiNPC.MaestroUser = 0 Then
-    
+        
+        Dim TieneDrops As Boolean
+        TieneDrops = True
         'Si lo mato un guardia no debe dropear items.
-        If Npclist(NpcIndexAttacker).NPCtype <> 2 Then
+        If NpcIndexAttacker > 0 Then
+            If Npclist(NpcIndexAttacker).NPCtype = 2 Then
+                TieneDrops = False
+            End If
+        End If
+        
+        If TieneDrops Then
             'Tiramos el oro
             Call NPCTirarOro(MiNPC)
             'Tiramos el inventario
             Call NPC_TIRAR_ITEMS(MiNPC)
         End If
+        
         'ReSpawn o no
         Call ReSpawnNpc(MiNPC)
     End If
