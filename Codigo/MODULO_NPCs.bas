@@ -62,7 +62,7 @@ Sub QuitarMascotaNpc(ByVal Maestro As Integer)
     Npclist(Maestro).Mascotas = Npclist(Maestro).Mascotas - 1
 End Sub
 
-Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
+Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Optional ByVal NpcIndexAttacker As Integer = 0)
 '********************************************************
 'Author: Unknown
 'Llamado cuando la vida de un NPC llega a cero.
@@ -70,7 +70,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 '22/06/06: (Nacho) Chequeamos si es pretoriano
 '24/01/2007: Pablo (ToxicWaste): Agrego para actualización de tag si cambia de status.
 '********************************************************
-On Error GoTo Errhandler
+On Error GoTo errhandler
     Dim MiNPC As NPC
     MiNPC = Npclist(NpcIndex)
     Dim EraCriminal As Boolean
@@ -190,10 +190,14 @@ On Error GoTo Errhandler
     End If ' Userindex > 0
    
     If MiNPC.MaestroUser = 0 Then
-        'Tiramos el oro
-        Call NPCTirarOro(MiNPC)
-        'Tiramos el inventario
-        Call NPC_TIRAR_ITEMS(MiNPC)
+    
+        'Si lo mato un guardia no debe dropear items.
+        If Npclist(NpcIndexAttacker).NPCtype <> 2 Then
+            'Tiramos el oro
+            Call NPCTirarOro(MiNPC)
+            'Tiramos el inventario
+            Call NPC_TIRAR_ITEMS(MiNPC)
+        End If
         'ReSpawn o no
         Call ReSpawnNpc(MiNPC)
     End If
@@ -202,7 +206,7 @@ On Error GoTo Errhandler
     
 Exit Sub
 
-Errhandler:
+errhandler:
     Call LogError("Error en MuereNpc - Error: " & Err.Number & " - Desc: " & Err.Description)
 End Sub
 
@@ -251,7 +255,7 @@ Private Sub ResetNpcCharInfo(ByVal NpcIndex As Integer)
         .CharIndex = 0
         .FX = 0
         .Head = 0
-        .heading = 0
+        .Heading = 0
         .Loops = 0
         .ShieldAnim = 0
         .WeaponAnim = 0
@@ -347,7 +351,7 @@ End Sub
 
 Public Sub QuitarNPC(ByVal NpcIndex As Integer)
 
-On Error GoTo Errhandler
+On Error GoTo errhandler
 
     With Npclist(NpcIndex)
         .flags.NPCActive = False
@@ -378,7 +382,7 @@ On Error GoTo Errhandler
     End If
 Exit Sub
 
-Errhandler:
+errhandler:
     Call LogError("Error en QuitarNPC")
 End Sub
 
@@ -533,21 +537,21 @@ Dim Criminal As Byte
     Criminal = Npclist(NpcIndex).Stats.Alineacion
     
     If Not toMap Then
-        Call WriteCharacterCreate(sndIndex, Npclist(NpcIndex).Char.Body, Npclist(NpcIndex).Char.Head, Npclist(NpcIndex).Char.heading, Npclist(NpcIndex).Char.CharIndex, X, Y, Npclist(NpcIndex).Char.WeaponAnim, Npclist(NpcIndex).Char.ShieldAnim, 0, 0, Npclist(NpcIndex).Char.CascoAnim, Nombre, Criminal, 0)
+        Call WriteCharacterCreate(sndIndex, Npclist(NpcIndex).Char.Body, Npclist(NpcIndex).Char.Head, Npclist(NpcIndex).Char.Heading, Npclist(NpcIndex).Char.CharIndex, X, Y, Npclist(NpcIndex).Char.WeaponAnim, Npclist(NpcIndex).Char.ShieldAnim, 0, 0, Npclist(NpcIndex).Char.CascoAnim, Nombre, Criminal, 0)
         Call FlushBuffer(sndIndex)
     Else
         Call AgregarNpc(NpcIndex)
     End If
 End Sub
 
-Public Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal heading As eHeading)
+Public Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading)
     If NpcIndex > 0 Then
         With Npclist(NpcIndex).Char
             .Body = Body
             .Head = Head
-            .heading = heading
+            .Heading = Heading
             
-            Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterChange(Body, Head, heading, .CharIndex, 0, 0, 0, 0, 0))
+            Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterChange(Body, Head, Heading, .CharIndex, 0, 0, 0, 0, 0))
         End With
     End If
 End Sub
@@ -618,7 +622,7 @@ On Error GoTo errh
                     
                     'Update map and user pos
                     UserList(UserIndex).Pos = CasperPos
-                    UserList(UserIndex).Char.heading = CasperHeading
+                    UserList(UserIndex).Char.Heading = CasperHeading
                     MapData(.Pos.map, CasperPos.X, CasperPos.Y).UserIndex = UserIndex
             
 
@@ -629,7 +633,7 @@ On Error GoTo errh
             'Update map and user pos
             MapData(.Pos.map, .Pos.X, .Pos.Y).NpcIndex = 0
             .Pos = nPos
-            .Char.heading = nHeading
+            .Char.Heading = nHeading
             MapData(.Pos.map, nPos.X, nPos.Y).NpcIndex = NpcIndex
             
             'Actualizamos las áreas de ser necesario
@@ -653,7 +657,7 @@ End Sub
 Function NextOpenNPC() As Integer
 'Call LogTarea("Sub NextOpenNPC")
 
-On Error GoTo Errhandler
+On Error GoTo errhandler
     Dim LoopC As Long
       
     For LoopC = 1 To MAXNPCS + 1
@@ -664,7 +668,7 @@ On Error GoTo Errhandler
     NextOpenNPC = LoopC
 Exit Function
 
-Errhandler:
+errhandler:
     Call LogError("Error en NextOpenNPC")
 End Function
 
@@ -862,7 +866,7 @@ Public Function OpenNPC(ByVal NpcNumber As Integer, Optional ByVal ReSpawn = Tru
         .Char.ShieldAnim = val(Leer.GetValue("NPC" & NpcNumber, "Escudo"))
         .Char.CascoAnim = val(Leer.GetValue("NPC" & NpcNumber, "Casco"))
         .OrigHeading = val(Leer.GetValue("NPC" & NpcNumber, "Heading"))
-        .Char.heading = .OrigHeading
+        .Char.Heading = .OrigHeading
         
         .Attackable = val(Leer.GetValue("NPC" & NpcNumber, "Attackable"))
         .Comercia = val(Leer.GetValue("NPC" & NpcNumber, "Comercia"))

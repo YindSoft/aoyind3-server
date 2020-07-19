@@ -591,7 +591,7 @@ Public Sub NpcDañoNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
                 Call FollowAmo(Atacante)
             End If
             
-            Call MuereNpc(Victima, .MaestroUser)
+            Call MuereNpc(Victima, .MaestroUser, Atacante)
         End If
     End With
 End Sub
@@ -666,7 +666,7 @@ Public Function UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As In
 '13/02/2011: Amraphen - Ahora la stamina es quitada cuando efectivamente se ataca al NPC.
 '***************************************************
 
-On Error GoTo Errhandler
+On Error GoTo errhandler
 
     If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then Exit Function
     
@@ -695,7 +695,7 @@ On Error GoTo Errhandler
     
     Exit Function
     
-Errhandler:
+errhandler:
     Dim UserName As String
     
     If UserIndex > 0 Then UserName = UserList(UserIndex).Name
@@ -863,7 +863,7 @@ Public Function UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal Victim
 '                    inválidos, y evitar un doble chequeo innecesario
 '***************************************************
 
-On Error GoTo Errhandler
+On Error GoTo errhandler
 
     If Not PuedeAtacar(AtacanteIndex, VictimaIndex) Then Exit Function
     
@@ -915,7 +915,7 @@ On Error GoTo Errhandler
     
     Exit Function
     
-Errhandler:
+errhandler:
     Call LogError("Error en UsuarioAtacaUsuario. Error " & Err.Number & " : " & Err.Description)
 End Function
 
@@ -1122,7 +1122,7 @@ Public Function PuedeAtacar(ByVal attackerIndex As Integer, ByVal VictimIndex As
 '24/01/2007 Pablo (ToxicWaste) - Ordeno todo y agrego situacion de Defensa en ciudad Armada y Caos.
 '24/02/2009: ZaMa - Los usuarios pueden atacarse entre si.
 '***************************************************
-On Error GoTo Errhandler
+On Error GoTo errhandler
 
     'MUY importante el orden de estos "IF"...
     
@@ -1232,7 +1232,7 @@ On Error GoTo Errhandler
     PuedeAtacar = True
 Exit Function
 
-Errhandler:
+errhandler:
     Call LogError("Error en PuedeAtacar. Error " & Err.Number & " : " & Err.Description)
 End Function
 
@@ -1449,7 +1449,7 @@ End Sub
 Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integer) As eTrigger6
 'TODO: Pero que rebuscado!!
 'Nigo:  Te lo rediseñe, pero no te borro el TODO para que lo revises.
-On Error GoTo Errhandler
+On Error GoTo errhandler
     Dim tOrg As eTrigger
     Dim tDst As eTrigger
     
@@ -1467,7 +1467,7 @@ On Error GoTo Errhandler
     End If
 
 Exit Function
-Errhandler:
+errhandler:
     TriggerZonaPelea = TRIGGER6_AUSENTE
     LogError ("Error en TriggerZonaPelea - " & Err.Description)
 End Function
@@ -1504,7 +1504,7 @@ Public Sub LanzarProyectil(ByVal UserIndex As Integer, ByVal X As Integer, ByVal
 'Last Modification: 10/07/2010
 'Throws an arrow or knive to target user/npc.
 '***************************************************
-On Error GoTo Errhandler
+On Error GoTo errhandler
 
     Dim MunicionSlot As Byte
     Dim MunicionIndex As Integer
@@ -1652,7 +1652,7 @@ On Error GoTo Errhandler
     
     Exit Sub
 
-Errhandler:
+errhandler:
 
     Dim UserName As String
     If UserIndex > 0 Then UserName = UserList(UserIndex).Name

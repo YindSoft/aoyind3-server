@@ -191,9 +191,9 @@ If Hechizos(Spell).SubeHP = 2 Then
         If Npclist(TargetNPC).Stats.MinHP < 1 Then
             Npclist(TargetNPC).Stats.MinHP = 0
             If .MaestroUser > 0 Then
-                Call MuereNpc(TargetNPC, .MaestroUser)
+                Call MuereNpc(TargetNPC, .MaestroUser, NpcIndex)
             Else
-                Call MuereNpc(TargetNPC, 0)
+                Call MuereNpc(TargetNPC, 0, NpcIndex)
             End If
         End If
     
@@ -220,7 +220,7 @@ End Sub
 
 Function TieneHechizo(ByVal i As Integer, ByVal UserIndex As Integer) As Boolean
 
-On Error GoTo ErrHandler
+On Error GoTo errhandler
     
     Dim j As Integer
     For j = 1 To MAXUSERHECHIZOS
@@ -231,7 +231,7 @@ On Error GoTo ErrHandler
     Next
 
 Exit Function
-ErrHandler:
+errhandler:
 
 End Function
 
@@ -267,7 +267,7 @@ Sub DecirPalabrasMagicas(ByVal SpellWords As String, ByVal UserIndex As Integer)
 '25/07/2009: ZaMa - Invisible admins don't say any word when casting a spell
 '17/11/2009: ZaMa - Now the user become visible when casting a spell, if it is hidden
 '***************************************************
-On Error GoTo ErrHandler
+On Error GoTo errhandler
 
     With UserList(UserIndex)
         If .flags.AdminInvisible <> 1 Then
@@ -288,7 +288,7 @@ On Error GoTo ErrHandler
     
     Exit Sub
     
-ErrHandler:
+errhandler:
     Call LogError("Error en DecirPalabrasMagicas. Error: " & Err.Number & " - " & Err.Description)
 End Sub
 
@@ -449,9 +449,9 @@ ElseIf Hechizos(Spell).SubeHP = 2 Then
     If Npclist(Victima).Stats.MinHP < 1 Then
         Npclist(Victima).Stats.MinHP = 0
         If Npclist(NpcIndex).MaestroUser > 0 Then
-            Call MuereNpc(Victima, Npclist(NpcIndex).MaestroUser)
+            Call MuereNpc(Victima, Npclist(NpcIndex).MaestroUser, NpcIndex)
         Else
-            Call MuereNpc(Victima, 0)
+            Call MuereNpc(Victima, 0, NpcIndex)
         End If
     End If
     
@@ -778,7 +778,7 @@ End Sub
 
 Sub LanzarHechizo(index As Integer, UserIndex As Integer)
 
-On Error GoTo ErrHandler
+On Error GoTo errhandler
 
 Dim uh As Integer
 
@@ -839,7 +839,7 @@ If UserList(UserIndex).Counters.Ocultando Then _
     
 Exit Sub
 
-ErrHandler:
+errhandler:
     Call LogError("Error en LanzarHechizo. Error " & Err.Number & " : " & Err.Description)
     
 End Sub
